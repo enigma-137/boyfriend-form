@@ -347,7 +347,7 @@ export default function BoyfriendApplicationForm() {
               id="additionalInfo"
               value={formData.additionalInfo}
               onChange={(e) => updateField("additionalInfo", e.target.value)}
-              placeholder="Anything else you'd like to share? Why should she pick you?"
+              placeholder="Anything else you'd like to share? Why should I pick you?"
               className="mt-1.5 min-h-24"
             />
           </div>
@@ -366,7 +366,7 @@ export default function BoyfriendApplicationForm() {
             </div>
             <CardTitle className="text-2xl text-balance">Application Submitted!</CardTitle>
             <CardDescription className="text-pretty">
-              Your application has been received. She&apos;ll review it and get back to you if you&apos;re a match. Good
+              Your application has been received. I&apos;ll review it and get back to you if you&apos;re a match. Good
               luck!
             </CardDescription>
           </CardHeader>
@@ -381,7 +381,7 @@ export default function BoyfriendApplicationForm() {
         <CardHeader className="space-y-2">
           <div className="flex items-center gap-2">
          
-            <CardTitle className="text-2xl md:text-3xl text-balance">Boyfriend Application Form</CardTitle>
+            <CardTitle className="text-xl md:text-2xl text-balance">Natsss &apos;s 2026 Boyfriend Application Form</CardTitle>
           </div>
           <CardDescription className="text-pretty">
             Think you have what it takes? Fill out this application honestly.

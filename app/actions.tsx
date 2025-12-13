@@ -2,6 +2,15 @@
 
 import { supabase } from "@/lib/supabase"
 
+function camelToSnake(obj: Record<string, any>): Record<string, any> {
+  const result: Record<string, any> = {}
+  for (const [key, value] of Object.entries(obj)) {
+    const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
+    result[snakeKey] = value
+  }
+  return result
+}
+
 export async function submitApplication(data: {
   name: string
   email: string
@@ -19,9 +28,10 @@ export async function submitApplication(data: {
   additionalInfo: string
 }) {
   try {
+    const snakeCaseData = camelToSnake(data)
     const { error } = await supabase
       .from('applications')
-      .insert([data])
+      .insert([snakeCaseData])
 
     if (error) {
       throw new Error(error.message || "Failed to submit application")
