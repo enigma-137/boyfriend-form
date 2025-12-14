@@ -33,6 +33,7 @@ export default function BoyfriendApplicationForm() {
   const [step, setStep] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [errors, setErrors] = useState<Partial<FormData>>({})
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -52,10 +53,71 @@ export default function BoyfriendApplicationForm() {
 
   const updateField = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+    // Clear error for this field when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }))
+    }
+  }
+
+  const validateStep = (stepIndex: number): boolean => {
+    const newErrors: Partial<FormData> = {}
+
+    switch (stepIndex) {
+      case 0: 
+        if (!formData.name.trim()) newErrors.name = "Full name is required"
+        if (!formData.email.trim()) newErrors.email = "Email is required"
+        if (!formData.age.trim()) newErrors.age = "Age is required"
+        break
+      case 1: 
+        if (!formData.country.trim()) newErrors.country = "Country is required"
+        if (!formData.state.trim()) newErrors.state = "State/Region is required"
+        if (!formData.height) newErrors.height = "Height selection is required"
+        break
+      case 2: 
+        if (!formData.education) newErrors.education = "Education level is required"
+        if (!formData.occupation) newErrors.occupation = "Occupation type is required"
+        break
+      case 3: 
+        if (!formData.grammarTest) newErrors.grammarTest = "Grammar test answer is required"
+        if (!formData.canCook) newErrors.canCook = "Cooking ability is required"
+        if (!formData.anatomyKnowledge) newErrors.anatomyKnowledge = "Anatomy knowledge is required"
+        break
+      case 4:
+        if (!formData.reliability) newErrors.reliability = "Reliability answer is required"
+        if (!formData.footballTeam) newErrors.footballTeam = "Football team selection is required"
+        // additionalInfo is optional
+        break
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const validateAll = (): boolean => {
+    const newErrors: Partial<FormData> = {}
+
+    if (!formData.name.trim()) newErrors.name = "Full name is required"
+    if (!formData.email.trim()) newErrors.email = "Email is required"
+    if (!formData.age.trim()) newErrors.age = "Age is required"
+    if (!formData.country.trim()) newErrors.country = "Country is required"
+    if (!formData.state.trim()) newErrors.state = "State/Region is required"
+    if (!formData.height) newErrors.height = "Height selection is required"
+    if (!formData.education) newErrors.education = "Education level is required"
+    if (!formData.occupation) newErrors.occupation = "Occupation type is required"
+    if (!formData.grammarTest) newErrors.grammarTest = "Grammar test answer is required"
+    if (!formData.canCook) newErrors.canCook = "Cooking ability is required"
+    if (!formData.anatomyKnowledge) newErrors.anatomyKnowledge = "Anatomy knowledge is required"
+    if (!formData.reliability) newErrors.reliability = "Reliability answer is required"
+    if (!formData.footballTeam) newErrors.footballTeam = "Football team selection is required"
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
   }
 
   const handleNext = () => {
-    if (step < 4) setStep(step + 1)
+    if (validateStep(step) && step < 4) {
+      setStep(step + 1)
+    }
   }
 
   const handleBack = () => {
@@ -63,6 +125,8 @@ export default function BoyfriendApplicationForm() {
   }
 
   const handleSubmit = async () => {
+    if (!validateAll()) return
+
     setIsSubmitting(true)
     try {
       await submitApplication(formData)
@@ -81,36 +145,39 @@ export default function BoyfriendApplicationForm() {
       content: (
         <div className="space-y-4">
           <div>
-            <Label htmlFor="name">Full Name</Label>
+            <Label htmlFor="name">Full Name *</Label>
             <Input
               id="name"
               value={formData.name}
               onChange={(e) => updateField("name", e.target.value)}
               placeholder="Your full name"
-              className="mt-1.5"
+              className={`mt-1.5 ${errors.name ? "border-red-500" : ""}`}
             />
+            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
           </div>
           <div>
-            <Label htmlFor="email">Email Address</Label>
+            <Label htmlFor="email">Email Address *</Label>
             <Input
               id="email"
               type="email"
               value={formData.email}
               onChange={(e) => updateField("email", e.target.value)}
               placeholder="your.email@example.com"
-              className="mt-1.5"
+              className={`mt-1.5 ${errors.email ? "border-red-500" : ""}`}
             />
+            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
           <div>
-            <Label htmlFor="age">Age</Label>
+            <Label htmlFor="age">Age *</Label>
             <Input
               id="age"
               type="number"
               value={formData.age}
               onChange={(e) => updateField("age", e.target.value)}
               placeholder="25"
-              className="mt-1.5"
+              className={`mt-1.5 ${errors.age ? "border-red-500" : ""}`}
             />
+            {errors.age && <p className="text-red-500 text-sm mt-1">{errors.age}</p>}
           </div>
         </div>
       ),
@@ -121,29 +188,31 @@ export default function BoyfriendApplicationForm() {
       content: (
         <div className="space-y-4">
           <div>
-            <Label htmlFor="country">Country</Label>
+            <Label htmlFor="country">Country *</Label>
             <Input
               id="country"
               value={formData.country}
               onChange={(e) => updateField("country", e.target.value)}
               placeholder="e.g., Nigeria"
-              className="mt-1.5"
+              className={`mt-1.5 ${errors.country ? "border-red-500" : ""}`}
             />
+            {errors.country && <p className="text-red-500 text-sm mt-1">{errors.country}</p>}
           </div>
           <div>
-            <Label htmlFor="state">State/Region</Label>
+            <Label htmlFor="state">State/Region *</Label>
             <Input
               id="state"
               value={formData.state}
               onChange={(e) => updateField("state", e.target.value)}
               placeholder="e.g., Lagos"
-              className="mt-1.5"
+              className={`mt-1.5 ${errors.state ? "border-red-500" : ""}`}
             />
+            {errors.state && <p className="text-red-500 text-sm mt-1">{errors.state}</p>}
           </div>
           <div>
-            <Label htmlFor="height">Height</Label>
+            <Label htmlFor="height">Height *</Label>
             <Select value={formData.height} onValueChange={(value) => updateField("height", value)}>
-              <SelectTrigger className="mt-1.5">
+              <SelectTrigger className={`mt-1.5 ${errors.height ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select your height" />
               </SelectTrigger>
               <SelectContent>
@@ -165,9 +234,9 @@ export default function BoyfriendApplicationForm() {
       content: (
         <div className="space-y-4">
           <div>
-            <Label htmlFor="education">Highest Degree</Label>
+            <Label htmlFor="education">Highest Degree *</Label>
             <Select value={formData.education} onValueChange={(value) => updateField("education", value)}>
-              <SelectTrigger className="mt-1.5">
+              <SelectTrigger className={`mt-1.5 ${errors.education ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select your education level" />
               </SelectTrigger>
               <SelectContent>
@@ -178,13 +247,16 @@ export default function BoyfriendApplicationForm() {
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
+            {errors.footballTeam && <p className="text-red-500 text-sm mt-1">{errors.footballTeam}</p>}
+            {errors.education && <p className="text-red-500 text-sm mt-1">{errors.education}</p>}
+            {errors.height && <p className="text-red-500 text-sm mt-1">{errors.height}</p>}
           </div>
           <div>
-            <Label>Occupation Type</Label>
+            <Label>Occupation Type *</Label>
             <RadioGroup
               value={formData.occupation}
               onValueChange={(value) => updateField("occupation", value)}
-              className="mt-2"
+              className={`mt-2 ${errors.occupation ? "border border-red-500 rounded-md p-2" : ""}`}
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="creative" id="creative" />
@@ -205,6 +277,11 @@ export default function BoyfriendApplicationForm() {
                 </Label>
               </div>
             </RadioGroup>
+            {errors.reliability && <p className="text-red-500 text-sm mt-1">{errors.reliability}</p>}
+            {errors.anatomyKnowledge && <p className="text-red-500 text-sm mt-1">{errors.anatomyKnowledge}</p>}
+            {errors.canCook && <p className="text-red-500 text-sm mt-1">{errors.canCook}</p>}
+            {errors.grammarTest && <p className="text-red-500 text-sm mt-1">{errors.grammarTest}</p>}
+            {errors.occupation && <p className="text-red-500 text-sm mt-1">{errors.occupation}</p>}
           </div>
         </div>
       ),
@@ -215,11 +292,11 @@ export default function BoyfriendApplicationForm() {
       content: (
         <div className="space-y-4">
           <div>
-            <Label>Grammar Test: Complete the sentence</Label>
+            <Label>Grammar Test: Complete the sentence *</Label>
             <p className="text-sm text-muted-foreground mt-1 mb-2">
               &quot;_____ going to be late if you don&apos;t hurry!&quot;
             </p>
-            <RadioGroup value={formData.grammarTest} onValueChange={(value) => updateField("grammarTest", value)}>
+            <RadioGroup value={formData.grammarTest} onValueChange={(value) => updateField("grammarTest", value)} className={errors.grammarTest ? "border border-red-500 rounded-md p-2" : ""}>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="your" id="your" />
                 <Label htmlFor="your" className="font-normal cursor-pointer">
@@ -235,11 +312,11 @@ export default function BoyfriendApplicationForm() {
             </RadioGroup>
           </div>
           <div>
-            <Label>Can you cook proper jollof rice that slaps?</Label>
+            <Label>Can you cook proper jollof rice that slaps? *</Label>
             <RadioGroup
               value={formData.canCook}
               onValueChange={(value) => updateField("canCook", value)}
-              className="mt-2"
+              className={`mt-2 ${errors.canCook ? "border border-red-500 rounded-md p-2" : ""}`}
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="yes-masterchef" id="yes-masterchef" />
@@ -262,11 +339,11 @@ export default function BoyfriendApplicationForm() {
             </RadioGroup>
           </div>
           <div>
-            <Label>Bonus: Can you locate the clit without Google Maps?</Label>
+            <Label>Bonus: Can you locate the clit without Google Maps? *</Label>
             <RadioGroup
               value={formData.anatomyKnowledge}
               onValueChange={(value) => updateField("anatomyKnowledge", value)}
-              className="mt-2"
+              className={`mt-2 ${errors.anatomyKnowledge ? "border border-red-500 rounded-md p-2" : ""}`}
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="yes-expert" id="yes-expert" />
@@ -297,11 +374,11 @@ export default function BoyfriendApplicationForm() {
       content: (
         <div className="space-y-4">
           <div>
-            <Label>Are you the type to promise and fail?</Label>
+            <Label>Are you the type to promise and fail? *</Label>
             <RadioGroup
               value={formData.reliability}
               onValueChange={(value) => updateField("reliability", value)}
-              className="mt-2"
+              className={`mt-2 ${errors.reliability ? "border border-red-500 rounded-md p-2" : ""}`}
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="never" id="never" />
@@ -324,9 +401,9 @@ export default function BoyfriendApplicationForm() {
             </RadioGroup>
           </div>
           <div>
-            <Label>Which football team do you support?</Label>
+            <Label>Which football team do you support? *</Label>
             <Select value={formData.footballTeam} onValueChange={(value) => updateField("footballTeam", value)}>
-              <SelectTrigger className="mt-1.5">
+              <SelectTrigger className={`mt-1.5 ${errors.footballTeam ? "border-red-500" : ""}`}>
                 <SelectValue placeholder="Select your team" />
               </SelectTrigger>
               <SelectContent>
